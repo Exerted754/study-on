@@ -1,0 +1,29 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Курсы / StudyOn{% endblock %}
+
+{% block body %}
+    <h1>Курсы</h1>
+
+    {% if courses|length > 0 %}
+        <ul>
+            {% for course in courses %}
+                <li>
+                    <a href="{{ path('app_course_show', {'id': course.id}) }}">
+                        {{ course.title }}
+                    </a>
+
+                    {% if course.description %}
+                        <p>{{ course.description }}</p>
+                    {% endif %}
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>Курсы пока не добавлены.</p>
+    {% endif %}
+
+    <p>
+        <a href="{{ path('app_course_new') }}">Добавить новый курс</a>
+    </p>
+{% endblock %}
