@@ -5,9 +5,14 @@ namespace App\Entity;
 use App\Repository\LessonRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: LessonRepository::class)]
+#[UniqueEntity(
+    fields: ['course', 'number'],
+    message: 'В этом курсе уже есть урок с таким номером!'
+)]
 class Lesson
 {
     #[ORM\Id]

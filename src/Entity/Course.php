@@ -11,7 +11,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 
 #[ORM\Entity(repositoryClass: CourseRepository::class)]
-#[UniqueEntity('code')]
+#[UniqueEntity('title', message: 'Курс с таким названием уже существует!')]
 class Course
 {
     #[ORM\Id]
