@@ -14,3 +14,7 @@
 ###< symfony/phpunit-bridge ###
 
 .idea
+/node_modules/
+/public/build
+npm-debug.log
+yarn-error.log
