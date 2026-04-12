@@ -42,3 +42,4 @@ services:
     volumes:
       - ${PWD}:/app
       - ${HOME}/.yarn:/yarn
+    command: ["sh", "-c", "sleep infinity"]

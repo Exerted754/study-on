@@ -1,0 +1,11 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Ошибка{% endblock %}
+
+{% block body %}
+    <h1>Произошла ошибка</h1>
+    <p>Во время запроса произошла ошибка.</p>
+    <p>Код ошибки: {{ status_code }}</p>
+    <p>Описание: {{ status_text }}</p>
+    <p><a href="{{ path('app_course_index') }}">Вернуться к списку курсов</a></p>
+{% endblock %}

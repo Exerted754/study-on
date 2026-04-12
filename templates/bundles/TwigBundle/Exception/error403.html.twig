@@ -1,0 +1,9 @@
+{% extends "base.html.twig" %}
+
+{% block title %}404 / Страница не найден{% endblock %}
+
+{% block body %}
+    <h1>Страница не найден</h1>
+    <p>Запрошенная страница не существует</p>
+    <p><a href="{{ path('app_course_index') }}"> Вернуться к списку курсов</a></p>
+{% endblock %}
