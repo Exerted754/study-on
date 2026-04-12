@@ -3,17 +3,11 @@
 {% block title %}Новый урок / StudyOn{% endblock %}
 
 {% block body %}
-    <h1>Создать новый урок</h1>
+    <h1 class="mb-4">Создать новый урок</h1>
 
-    {{ include('lesson/_form.html.twig') }}
-
-    {% if lesson.course %}
-        <p>
-            <a href="{{ path('app_course_show', {'id': lesson.course.id}) }}">Вернуться к курсу</a>
-        </p>
-    {% else %}
-        <p>
-            <a href="{{ path('app_course_index') }}">Вернуться к списку курсов</a>
-        </p>
-    {% endif %}
+    <div class="card">
+        <div class="card-body">
+            {{ include('lesson/_form.html.twig') }}
+        </div>
+    </div>
 {% endblock %}

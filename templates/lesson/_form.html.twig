@@ -1,4 +1,16 @@
 {{ form_start(form) }}
     {{ form_widget(form) }}
-    <button class="btn">{{ button_label|default('Save') }}</button>
+
+    <div class="mt-3 d-flex gap-2"></div>
+        <button class="btn btn-primary">{{ button_label|default('Сохранить') }}</button>
+
+        {% if lesson is defined and lesson.course %}
+            <a href="{{ path('app_course_show'), {'id': lesson.course.id} }}" class="btn btn-outline-secondary">
+                Вернуться к курсу
+            </a>
+        {% else %}
+            <a href="{{ path('app_course_index') }}" class="btn btn-outline-secondary">
+                К списку курсов
+            </a>
+        {% endif %}
 {{ form_end(form) }}

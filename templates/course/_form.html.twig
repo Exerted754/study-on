@@ -1,4 +1,8 @@
 {{ form_start(form) }}
     {{ form_widget(form) }}
-    <button class="btn">{{ button_label|default('Save') }}</button>
+
+    <div class="mt-3 d-flex gap-2">
+        <button class="btn btn-primary">{{ button_label|default('Сохранить') }}</button>
+        <a href="{{ path('app_course_index') }}" class="btn btn-outline-secondary">К списку курсов</a>
+    </div>
 {{ form_end(form) }}
