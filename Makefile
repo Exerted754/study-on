@@ -2,6 +2,7 @@ COMPOSE=docker compose
 PHP=$(COMPOSE) exec php
 CONSOLE=$(PHP) bin/console
 COMPOSER=$(PHP) composer
+PHPUNIT=$(PHP) vendor/bin/phpunit
 
 up:
 	@${COMPOSE} up -d
@@ -22,10 +23,19 @@ fixtload:
 	@${CONSOLE} doctrine:fixtures:load
 
 encore_dev:
-	@${COMPOSE} run node yarn encore dev
+	@${COMPOSE} run --rm node yarn encore dev
 
 encore_prod:
-	@${COMPOSE} run node yarn encore production
+	@${COMPOSE} run --rm node yarn encore production
+
+db_test_reset:
+	@${CONSOLE} --env=test doctrine:database:drop --if-exists --force
+	@${CONSOLE} --env=test doctrine:database:create
+	@${CONSOLE} --env=test doctrine:migrations:migrate -n
+	@${CONSOLE} --env=test doctrine:fixtures:load -n
+
+phpunit:
+	@${PHPUNIT}
 
 # В файл local.mk можно добавлять дополнительные make-команды,
 # которые требуются лично вам, но не нужны на проекте в целом

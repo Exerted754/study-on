@@ -26,15 +26,21 @@ class Lesson
     private ?Course $course = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank(message: 'Введите название урока.')]
     #[Assert\Length(max: 255)]
     private ?string $title = null;
 
     #[ORM\Column(type: Types::TEXT)]
+    #[Assert\NotBlank(message: 'Введите содержимое урока.')]
     private ?string $content = null;
 
     #[ORM\Column]
-    #[Assert\NotNull]
-    #[Assert\LessThanOrEqual(10000)]
+    #[Assert\NotNull(message: 'Укажите номер урока.')]
+    #[Assert\Range(
+        min: 1,
+        max: 10000,
+        notInRangeMessage: 'Номер урока должен быть от {{ min }} до {{ max }}.'
+    )]
     private ?int $number = null;
 
     public function getId(): ?int

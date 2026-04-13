@@ -20,10 +20,12 @@ class Course
     private ?int $id = null;
 
     #[ORM\Column(length: 255, unique: true)]
+    #[Assert\NotBlank(message: 'Введите код курса.')]
     #[Assert\Length(max: 255)]
     private ?string $code = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank(message: 'Введите название курса.')]
     private ?string $title = null;
 
     #[ORM\Column(length: 1000, nullable: true)]
