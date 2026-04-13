@@ -54,7 +54,7 @@ class Course
         return $this->code;
     }
 
-    public function setCode(string $code): static
+    public function setCode(?string $code): static
     {
         $this->code = $code;
 
@@ -66,7 +66,7 @@ class Course
         return $this->title;
     }
 
-    public function setTitle(string $title): static
+    public function setTitle(?string $title): static
     {
         $this->title = $title;
 

@@ -98,7 +98,7 @@ class CourseControllerTest extends WebTestCase
 
         $client->submit($form);
 
-        $this->assertResponseIsSuccessful();
+        $this->assertResponseStatusCodeSame(422);
         $this->assertSelectorTextContains('body', 'Введите код курса.');
         $this->assertSelectorTextContains('body', 'Введите название курса.');
     }
@@ -118,7 +118,7 @@ class CourseControllerTest extends WebTestCase
 
         $client->submit($form);
 
-        $this->assertResponseIsSuccessful();
+        $this->assertResponseStatusCodeSame(422);
         $this->assertSelectorTextContains('body', 'Введите код курса.');
         $this->assertSelectorTextContains('body', 'Введите название курса.');
     }

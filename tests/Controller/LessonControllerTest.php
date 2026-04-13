@@ -78,7 +78,7 @@ class LessonControllerTest extends WebTestCase
 
         $client->submit($form);
 
-        $this->assertResponseIsSuccessful();
+        $this->assertResponseStatusCodeSame(422);
         $this->assertSelectorTextContains('body', 'Введите название урока.');
         $this->assertSelectorTextContains('body', 'Введите содержимое урока.');
         $this->assertSelectorTextContains('body', 'Укажите номер урока.');
@@ -100,7 +100,7 @@ class LessonControllerTest extends WebTestCase
 
         $client->submit($form);
 
-        $this->assertResponseIsSuccessful();
+        $this->assertResponseStatusCodeSame(422);
         $this->assertSelectorTextContains('body', 'Номер урока должен быть от 1 до 10000.');
     }
 
@@ -120,7 +120,7 @@ class LessonControllerTest extends WebTestCase
 
         $client->submit($form);
 
-        $this->assertResponseIsSuccessful();
+        $this->assertResponseStatusCodeSame(422);
         $this->assertSelectorTextContains('body', 'Выбран неверный курс.');
     }
 
@@ -162,7 +162,7 @@ class LessonControllerTest extends WebTestCase
 
         $client->submit($form);
 
-        $this->assertResponseIsSuccessful();
+        $this->assertResponseStatusCodeSame(422);
         $this->assertSelectorTextContains('body', 'Введите название урока.');
         $this->assertSelectorTextContains('body', 'Введите содержимое урока.');
         $this->assertSelectorTextContains('body', 'Укажите номер урока.');

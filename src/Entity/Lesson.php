@@ -65,7 +65,7 @@ class Lesson
         return $this->title;
     }
 
-    public function setTitle(string $title): static
+    public function setTitle(?string $title): static
     {
         $this->title = $title;
 
@@ -77,7 +77,7 @@ class Lesson
         return $this->content;
     }
 
-    public function setContent(string $content): static
+    public function setContent(?string $content): static
     {
         $this->content = $content;
 
@@ -89,7 +89,7 @@ class Lesson
         return $this->number;
     }
 
-    public function setNumber(int $number): static
+    public function setNumber(?int $number): static
     {
         $this->number = $number;
 
