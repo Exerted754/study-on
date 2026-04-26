@@ -52,9 +52,13 @@ class AppCustomAuthenticator extends AbstractLoginFormAuthenticator
         return new SelfValidatingPassport(
             new UserBadge($email, function () use ($email, $response) {
                 $user = new User();
+
+                $token = $response['token'];
+                $payload = $this->decodeJwtPayload($token);
+
                 $user->setEmail($email);
-                $user->setRoles($response['roles'] ?? ['ROLE_USER']);
-                $user->setApiToken($response['token']);
+                $user->setRoles($payload['roles'] ?? ['ROLE_USER']);
+                $user->setApiToken($token);
 
                 return $user;
             }),
@@ -63,6 +67,29 @@ class AppCustomAuthenticator extends AbstractLoginFormAuthenticator
                 new RememberMeBadge(),
             ]
         );
+    }
+
+    private function decodeJwtPayload(string $token): array
+    {
+        $parts = explode('.', $token);
+
+        if (count($parts) !== 3) {
+            return [];
+        }
+
+        $payload = $parts[1];
+
+        $payload .= str_repeat('=', 4 - strlen($payload) % 4);
+
+        $decoded = base64_decode(strtr($payload, '-_', '+/'));
+
+        if ($decoded === false) {
+            return [];
+        }
+
+        $data = json_decode($decoded, true);
+
+        return is_array($data) ? $data : [];
     }
 
     public function onAuthenticationSuccess(
