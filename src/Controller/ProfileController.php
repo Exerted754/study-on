@@ -13,7 +13,7 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 class ProfileController extends AbstractController
 {
     #[Route('profile', name: 'app_profile', methods: ['GET'])]
-    #[IsGranted('RoOLE_USER')]
+    #[IsGranted('ROLE_USER')]
     public function index(BillingClient $billingClient): Response
     {
         /** @var User $user */
