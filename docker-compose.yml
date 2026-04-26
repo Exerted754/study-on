@@ -43,3 +43,7 @@ services:
       - ${PWD}:/app
       - ${HOME}/.yarn:/yarn
     command: ["sh", "-c", "sleep infinity"]
+networks:
+  default:
+    external: true
+    name: study-onbilling_default

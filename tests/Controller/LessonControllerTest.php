@@ -3,6 +3,7 @@
 namespace App\Tests\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use Symfony\Component\DomCrawler\Crawler;
 
 class LessonControllerTest extends WebTestCase
 {
@@ -122,6 +123,26 @@ class LessonControllerTest extends WebTestCase
 
         $this->assertResponseStatusCodeSame(422);
         $this->assertSelectorTextContains('body', 'Выбран неверный курс.');
+    }
+
+    public function testCreateLessonWithDuplicateNumber(): void
+    {
+        $client = static::createClient();
+        $crawler = $client->request('GET', '/lessons/new?course_id=1');
+
+        $this->assertResponseIsSuccessful();
+
+        $form = $crawler->selectButton('Сохранить')->form([
+            'lesson[title]' => 'Урок',
+            'lesson[content]' => 'контент',
+            'lesson[number]' => 1,
+            'lesson[course]' => 1,
+        ]);
+
+        $client->submit($form);
+
+        $this->assertResponseStatusCodeSame(422);
+        $this->assertSelectorTextContains('body', 'В этом курсе уже есть урок с таким номером!');
     }
 
     public function testEditLessonSubmit(): void
