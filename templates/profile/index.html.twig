@@ -1,0 +1,34 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Профиль / StudyOn{% endblock %}
+
+{% block body %}
+    <h1 class="mb-4">Профиль</h1>
+
+    <div class="card">
+        <div class="card-body">
+            <p>
+                <strong>Email:</strong>
+                {{ email }}
+            </p>
+
+            <p>
+                <strong>Роль:</strong>
+                {% if 'ROLE_SUPER_ADMIN' in roles %}
+                    Администратор
+                {% else %}
+                    Пользователь
+                {% endif %}
+            </p>
+
+            <p>
+                <strong>Баланс:</strong>
+                {% if balance is not null %}
+                    {{ balance }}
+                {% else %}
+                    недоступен
+                {% endif %}
+            </p>
+        </div>
+    </div>
+{% endblock %}
