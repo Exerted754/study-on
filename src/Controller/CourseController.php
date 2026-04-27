@@ -45,7 +45,6 @@ final class CourseController extends AbstractController
     }
 
     #[Route('/{id}', name: 'app_course_show', methods: ['GET'])]
-    #[IsGranted('ROLE_USER')]
     public function show(Course $course): Response
     {
         return $this->render('course/show.html.twig', [
