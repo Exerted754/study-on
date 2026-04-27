@@ -2,11 +2,55 @@
 
 namespace App\Tests\Controller;
 
+use App\Service\BillingClient;
+use App\Tests\Mock\BillingClientMock;
+use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
-use Symfony\Component\DomCrawler\Crawler;
 
 class LessonControllerTest extends WebTestCase
 {
+    private function loginUser(KernelBrowser $client): void
+    {
+        $client->disableReboot();
+
+        static::getContainer()->set(
+            BillingClient::class,
+            new BillingClientMock()
+        );
+
+        $crawler = $client->request('GET', '/login');
+
+        $form = $crawler->filter('form')->form([
+            'email' => 'user@test.local',
+            'password' => 'Topparol',
+        ]);
+
+        $client->submit($form);
+
+        $this->assertResponseRedirects('/courses');
+    }
+
+    private function loginAdmin(KernelBrowser $client): void
+    {
+        $client->disableReboot();
+
+        static::getContainer()->set(
+            BillingClient::class,
+            new BillingClientMock()
+        );
+
+        $crawler = $client->request('GET', '/login');
+
+        $form = $crawler->filter('form')->form([
+            'email' => 'admin@test.local',
+            'password' => 'Admin_pass',
+        ]);
+
+        $client->submit($form);
+
+        $this->assertResponseRedirects('/courses');
+    }
+
     public function testIndexPageWorks(): void
     {
         $client = static::createClient();
@@ -20,6 +64,8 @@ class LessonControllerTest extends WebTestCase
     public function testShowLesson(): void
     {
         $client = static::createClient();
+        $this->loginUser($client);
+
         $client->request('GET', '/lessons/1');
 
         $this->assertResponseIsSuccessful();
@@ -36,6 +82,8 @@ class LessonControllerTest extends WebTestCase
     public function testEditLessonWorks(): void
     {
         $client = static::createClient();
+        $this->loginAdmin($client);
+
         $client->request('GET', '/lessons/1/edit');
 
         $this->assertResponseIsSuccessful();
@@ -44,6 +92,8 @@ class LessonControllerTest extends WebTestCase
     public function testCreateLesson(): void
     {
         $client = static::createClient();
+        $this->loginAdmin($client);
+
         $crawler = $client->request('GET', '/lessons/new?course_id=1');
 
         $this->assertResponseIsSuccessful();
@@ -66,6 +116,8 @@ class LessonControllerTest extends WebTestCase
     public function testCreateLessonValidation(): void
     {
         $client = static::createClient();
+        $this->loginAdmin($client);
+
         $crawler = $client->request('GET', '/lessons/new?course_id=1');
 
         $this->assertResponseIsSuccessful();
@@ -88,6 +140,8 @@ class LessonControllerTest extends WebTestCase
     public function testCreateLessonInvalidNumber(): void
     {
         $client = static::createClient();
+        $this->loginAdmin($client);
+
         $crawler = $client->request('GET', '/lessons/new?course_id=1');
 
         $this->assertResponseIsSuccessful();
@@ -108,6 +162,8 @@ class LessonControllerTest extends WebTestCase
     public function testCreateLessonInvalidCourse(): void
     {
         $client = static::createClient();
+        $this->loginAdmin($client);
+
         $crawler = $client->request('GET', '/lessons/new?course_id=1');
 
         $this->assertResponseIsSuccessful();
@@ -128,6 +184,8 @@ class LessonControllerTest extends WebTestCase
     public function testCreateLessonWithDuplicateNumber(): void
     {
         $client = static::createClient();
+        $this->loginAdmin($client);
+
         $crawler = $client->request('GET', '/lessons/new?course_id=1');
 
         $this->assertResponseIsSuccessful();
@@ -148,6 +206,8 @@ class LessonControllerTest extends WebTestCase
     public function testEditLessonSubmit(): void
     {
         $client = static::createClient();
+        $this->loginAdmin($client);
+
         $crawler = $client->request('GET', '/lessons/1/edit');
 
         $this->assertResponseIsSuccessful();
@@ -170,6 +230,8 @@ class LessonControllerTest extends WebTestCase
     public function testEditLessonValidation(): void
     {
         $client = static::createClient();
+        $this->loginAdmin($client);
+
         $crawler = $client->request('GET', '/lessons/1/edit');
 
         $this->assertResponseIsSuccessful();
@@ -192,6 +254,7 @@ class LessonControllerTest extends WebTestCase
     public function testDeleteLesson(): void
     {
         $client = static::createClient();
+        $this->loginAdmin($client);
 
         $crawler = $client->request('GET', '/lessons/new?course_id=1');
         $this->assertResponseIsSuccessful();
