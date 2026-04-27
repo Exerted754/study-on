@@ -33,6 +33,18 @@ class BillingClient
         );
     }
 
+    public function register(string $email, string $password): array
+    {
+        return $this->request(
+            'POST',
+            '/api/v1/register',
+            [
+                'email' => $email,
+                'password' => $password,
+            ]
+        );
+    }
+
     private function request(
         string $method,
         string $uri,
