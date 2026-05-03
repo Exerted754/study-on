@@ -59,6 +59,7 @@ class AppCustomAuthenticator extends AbstractLoginFormAuthenticator
                 $user->setEmail($email);
                 $user->setRoles($payload['roles'] ?? ['ROLE_USER']);
                 $user->setApiToken($token);
+                $user->setRefreshToken($response['refresh_token']);
 
                 return $user;
             }),
