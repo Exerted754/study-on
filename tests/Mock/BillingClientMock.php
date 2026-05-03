@@ -16,12 +16,14 @@ class BillingClientMock extends BillingClient
         if ($username === 'user@test.local' && $password === 'Topparol') {
             return [
                 'token' => $this->createToken(['ROLE_USER'], $username),
+                'refresh_token' => 'user_refresh_token',
             ];
         }
 
         if ($username === 'admin@test.local' && $password === 'Admin_pass') {
             return [
                 'token' => $this->createToken(['ROLE_SUPER_ADMIN'], $username),
+                'refresh_token' => 'admin_refresh_token',
             ];
         }
 
@@ -36,6 +38,7 @@ class BillingClientMock extends BillingClient
 
         return [
             'token' => $this->createToken(['ROLE_USER'], $email),
+            'refresh_token' => 'register_refresh_token',
         ];
     }
 
