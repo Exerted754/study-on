@@ -45,6 +45,17 @@ class BillingClient
         );
     }
 
+    public function refreshToken(string $refreshToken): array
+    {
+        return $this->request(
+            'POST',
+            '/api/v1/token/refresh',
+            [
+                'refresh_token' => $refreshToken,
+            ]
+        );
+    }
+
     private function request(
         string $method,
         string $uri,
