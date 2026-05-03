@@ -61,8 +61,24 @@ class BillingClientMock extends BillingClient
         $payload = base64_encode(json_encode([
             'username' => $username,
             'roles' => $roles,
+            'exp' => time() + 3600,
         ]));
 
         return $header . '.' . $payload . '.signature';
+    }
+
+    public function refreshToken(string $refreshToken): array
+    {
+        if ($refreshToken === 'admin_refresh_token') {
+            return [
+                'token' => $this->createToken(['ROLE_SUPER_ADMIN'], 'admin@test.local'),
+                'refresh_token' => 'admin_refresh_token',
+            ];
+        }
+
+        return [
+            'token' => $this->createToken(['ROLE_USER'], 'user@test.local'),
+            'refresh_token' => 'user_refresh_token',
+        ];
     }
 }
