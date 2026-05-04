@@ -81,4 +81,27 @@ class BillingCourseTest extends WebTestCase
         $this->assertSelectorTextContains('body', 'Курс уже куплен');
         $this->assertSelectorNotExists('form[action="/courses/1/pay"]');
     }
+
+    public function testCoursesListShowsBillingInfo(): void
+    {
+        $client = static::createClient();
+        $client->disableReboot();
+
+        static::getContainer()->set(
+            BillingClient::class,
+            new BillingClientMock()
+        );
+
+        $client->request('GET', '/courses');
+
+        $this->assertResponseIsSuccessful();
+
+        $this->assertSelectorTextContains('body', 'Покупка');
+        $this->assertSelectorTextContains('body', '199.99');
+
+        $this->assertSelectorTextContains('body', 'Аренда');
+        $this->assertSelectorTextContains('body', '99.99');
+
+        $this->assertSelectorTextContains('body', 'Бесплатно');
+    }
 }
