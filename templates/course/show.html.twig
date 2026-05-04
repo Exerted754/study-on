@@ -29,6 +29,12 @@
             <div class="card-body">
                 <h2 class="h5 mb-3">Стоимость курса</h2>
 
+                {% if balance is not null %}
+                    <p>
+                        <strong>Ваш баланс:</strong> {{ balance }} ₽
+                    </p>
+                {% endif %}
+
                 {% if billingCourse.type == 'free' %}
                     <p class="mb-0">
                         <strong>Тип:</strong> Бесплатный курс

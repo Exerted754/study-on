@@ -65,6 +65,7 @@ final class CourseController extends AbstractController
     {
         $billingCourse = null;
         $hasCourseAccess = false;
+        $balance = null;
 
         try {
             $billingCourse = $billingClient->getCourse($course->getCode());
@@ -77,6 +78,9 @@ final class CourseController extends AbstractController
                     $course->getCode(),
                     $user->getApiToken()
                 );
+
+                $billingUser = $billingClient->getCurrentUser($user->getApiToken());
+                $balance = $billingUser['balance'] ?? null;
             }
 
             if (($billingCourse['type'] ?? null) === 'free') {
@@ -90,6 +94,7 @@ final class CourseController extends AbstractController
             'course' => $course,
             'billingCourse' => $billingCourse,
             'hasCourseAccess' => $hasCourseAccess,
+            'balance' => $balance,
         ]);
     }
 

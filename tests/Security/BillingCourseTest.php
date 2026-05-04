@@ -104,4 +104,15 @@ class BillingCourseTest extends WebTestCase
 
         $this->assertSelectorTextContains('body', 'Бесплатно');
     }
+
+    public function testCoursePageShowsUserBalance(): void
+    {
+        $client = $this->loginUser(new BillingClientMock(['php-basic']));
+
+        $client->request('GET', '/courses/1');
+
+        $this->assertResponseIsSuccessful();
+        $this->assertSelectorTextContains('body', 'Ваш баланс');
+        $this->assertSelectorTextContains('body', '1000');
+    }
 }
