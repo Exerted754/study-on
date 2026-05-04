@@ -5,6 +5,60 @@
 {% block body %}
     <h1 class="mb-4">История операций</h1>
 
+    <form method="get" class="card mb-4">
+        <div class="card-body">
+            <div class="row g-3 align-items-end">
+                <div class="col-md-3">
+                    <label for="type" class="form-label">Тип операции</label>
+                    <select name="type" id="type" class="form-select">
+                        <option value="">Все</option>
+                        <option value="deposit" {% if filters.type == 'deposit' %}selected{% endif %}>
+                            Пополнение
+                        </option>
+                        <option value="payment" {% if filters.type == 'payment' %}selected{% endif %}>
+                            Оплата
+                        </option>
+                    </select>
+                </div>
+
+                <div class="col-md-3">
+                    <label for="course_code" class="form-label">Код курса</label>
+                    <input
+                        type="text"
+                        name="course_code"
+                        id="course_code"
+                        value="{{ filters.course_code }}"
+                        class="form-control"
+                        placeholder="php-basic"
+                    >
+                </div>
+
+                <div class="col-md-3">
+                    <div class="form-check">
+                        <input
+                            type="checkbox"
+                            name="skip_expired"
+                            id="skip_expired"
+                            value="1"
+                            class="form-check-input"
+                            {% if filters.skip_expired %}checked{% endif %}
+                        >
+                        <label for="skip_expired" class="form-check-label">
+                            Скрыть истёкшие аренды
+                        </label>
+                    </div>
+                </div>
+
+                <div class="col-md-3">
+                    <button class="btn btn-primary">Применить</button>
+                    <a href="{{ path('app_transaction_index') }}" class="btn btn-outline-secondary">
+                        Сбросить
+                    </a>
+                </div>
+            </div>
+        </div>
+    </form>
+
     {% if transactions|length > 0 %}
         <table class="table">
             <thead>

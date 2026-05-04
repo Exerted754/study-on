@@ -52,4 +52,38 @@ class TransactionPageTest extends WebTestCase
         $this->assertSelectorTextContains('body', 'Пополнение');
         $this->assertSelectorTextContains('body', 'Оплата');
     }
+
+    public function testUserCanFilterTransactionsByType(): void
+    {
+        $client = $this->loginUser();
+
+        $client->request('GET', '/transactions?type=deposit');
+
+        $this->assertResponseIsSuccessful();
+        $this->assertSelectorTextContains('tbody', 'Пополнение');
+        $this->assertSelectorTextNotContains('tbody', 'php-basic');
+        $this->assertSelectorTextNotContains('tbody', 'symfony-start');
+    }
+
+    public function testUserCanFilterTransactionsByCourseCode(): void
+    {
+        $client = $this->loginUser();
+
+        $client->request('GET', '/transactions?course_code=php-basic');
+
+        $this->assertResponseIsSuccessful();
+        $this->assertSelectorTextContains('body', 'php-basic');
+        $this->assertSelectorTextNotContains('body', 'symfony-start');
+    }
+
+    public function testUserCanFilterExpiredRentTransactions(): void
+    {
+        $client = $this->loginUser();
+
+        $client->request('GET', '/transactions?skip_expired=1');
+
+        $this->assertResponseIsSuccessful();
+        $this->assertSelectorTextContains('body', 'История операций');
+    }
+
 }

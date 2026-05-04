@@ -132,7 +132,7 @@ class BillingClientMock extends BillingClient
 
     public function getTransactions(string $token, array $filters = []): array
     {
-        return [
+        $transactions = [
             [
                 'id' => 1,
                 'created_at' => (new \DateTimeImmutable())->format(DATE_ATOM),
@@ -144,9 +144,41 @@ class BillingClientMock extends BillingClient
                 'created_at' => (new \DateTimeImmutable())->format(DATE_ATOM),
                 'type' => 'payment',
                 'amount' => 199.99,
-                'course_code' => 'symfony-basics',
+                'course_code' => 'php-basic',
+            ],
+            [
+                'id' => 3,
+                'created_at' => (new \DateTimeImmutable())->format(DATE_ATOM),
+                'type' => 'payment',
+                'amount' => 99.99,
+                'course_code' => 'symfony-start',
+                'expires_at' => (new \DateTimeImmutable('+1 week'))->format(DATE_ATOM),
             ],
         ];
+
+        if (!empty($filters['type'])) {
+            $transactions = array_filter($transactions, static function (array $transaction) use ($filters) {
+                return $transaction['type'] === $filters['type'];
+            });
+        }
+
+        if (!empty($filters['course_code'])) {
+            $transactions = array_filter($transactions, static function (array $transaction) use ($filters) {
+                return ($transaction['course_code'] ?? null) === $filters['course_code'];
+            });
+        }
+
+        if (!empty($filters['skip_expired'])) {
+            $transactions = array_filter($transactions, static function (array $transaction) {
+                if (!isset($transaction['expires_at'])) {
+                    return true;
+                }
+
+                return new \DateTimeImmutable($transaction['expires_at']) > new \DateTimeImmutable();
+            });
+        }
+
+        return array_values($transactions);
     }
 
     public function hasCourseAccess(string $courseCode, string $token): bool
