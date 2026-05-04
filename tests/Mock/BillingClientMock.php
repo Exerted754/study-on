@@ -7,8 +7,9 @@ use App\Service\BillingClient;
 
 class BillingClientMock extends BillingClient
 {
-    public function __construct()
-    {
+    public function __construct(
+        private array $closedCourses = []
+    ) {
     }
 
     public function auth(string $username, string $password): array
@@ -150,18 +151,14 @@ class BillingClientMock extends BillingClient
 
     public function hasCourseAccess(string $courseCode, string $token): bool
     {
-        if ($courseCode === 'postgresql-base') {
-            return true;
+        if (in_array($courseCode, $this->closedCourses, true)) {
+            return false;
         }
 
-        if ($courseCode === 'php-basic') {
-            return true;
-        }
-
-        if ($courseCode === 'symfony-start') {
-            return true;
-        }
-
-        return false;
+        return in_array($courseCode, [
+            'php-basic',
+            'symfony-start',
+            'postgresql-base',
+        ], true);
     }
 }
