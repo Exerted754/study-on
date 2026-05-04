@@ -56,6 +56,50 @@ class BillingClient
         );
     }
 
+    public function getCourses(): array
+    {
+        return $this->request(
+            'GET',
+            '/api/v1/courses'
+        );
+    }
+
+    public function getCourse(string $code): array
+    {
+        return $this->request(
+            'GET',
+            '/api/v1/courses/' . $code
+        );
+    }
+
+    public function payCourse(string $code, string $token): array
+    {
+        return $this->request(
+            'POST',
+            '/api/v1/courses/' . $code . '/pay',
+            null,
+            $token
+        );
+    }
+
+    public function getTransactions(string $token, array $filters = []): array
+    {
+        $query = '';
+
+        if ($filters !== []) {
+            $query = '?' . http_build_query([
+                'filter' => $filters,
+            ]);
+        }
+
+        return $this->request(
+            'GET',
+            '/api/v1/transactions' . $query,
+            null,
+            $token
+        );
+    }
+
     private function request(
         string $method,
         string $uri,
