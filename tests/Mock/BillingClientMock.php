@@ -147,4 +147,21 @@ class BillingClientMock extends BillingClient
             ],
         ];
     }
+
+    public function hasCourseAccess(string $courseCode, string $token): bool
+    {
+        if ($courseCode === 'postgresql-base') {
+            return true;
+        }
+
+        if ($courseCode === 'php-basic') {
+            return true;
+        }
+
+        if ($courseCode === 'symfony-start') {
+            return true;
+        }
+
+        return false;
+    }
 }
