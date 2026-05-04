@@ -25,6 +25,22 @@
                             {% if course.description %}
                                 <p class="mb-1 text-muted">{{ course.description }}</p>
                             {% endif %}
+
+                            {% set billingCourse = billingCourses[course.code] ?? null %}
+
+                            {% if billingCourse %}
+                                <div class="mt-2">
+                                    {% if billingCourse.type == 'free' %}
+                                        <span class="badge text-bg-success">Бесплатно</span>
+                                    {% elseif billingCourse.type == 'buy' %}
+                                        <span class="badge text-bg-primary">Покупка</span>
+                                        <span class="text-muted">{{ billingCourse.price }} ₽</span>
+                                    {% elseif billingCourse.type == 'rent' %}
+                                        <span class="badge text-bg-warning">Аренда</span>
+                                        <span class="text-muted">{{ billingCourse.price }} ₽</span>
+                                    {% endif %}
+                                </div>
+                            {% endif %}
                         </div>
 
                         {% if is_granted('ROLE_SUPER_ADMIN') %}

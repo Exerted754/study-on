@@ -19,10 +19,23 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 final class CourseController extends AbstractController
 {
     #[Route(name: 'app_course_index', methods: ['GET'])]
-    public function index(CourseRepository $courseRepository): Response
-    {
+        public function index(
+        CourseRepository $courseRepository,
+        BillingClient $billingClient
+    ): Response {
+        $billingCourses = [];
+
+        try {
+            foreach ($billingClient->getCourses() as $billingCourse) {
+                $billingCourses[$billingCourse['code']] = $billingCourse;
+            }
+        } catch (\Exception) {
+            $this->addFlash('danger', 'Не удалось получить данные о стоимости курсов');
+        }
+
         return $this->render('course/index.html.twig', [
             'courses' => $courseRepository->findAll(),
+            'billingCourses' => $billingCourses,
         ]);
     }
 
