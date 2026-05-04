@@ -33,6 +33,10 @@
                     <p class="mb-0">
                         <strong>Тип:</strong> Бесплатный курс
                     </p>
+
+                    <div class="alert alert-success mb-0">
+                        Курс доступен бесплатно
+                    </div>
                 {% elseif billingCourse.type == 'buy' %}
                     <p>
                         <strong>Тип:</strong> Покупка
@@ -41,7 +45,11 @@
                         <strong>Цена:</strong> {{ billingCourse.price }} ₽
                     </p>
 
-                    {% if app.user %}
+                    {% if hasCourseAccess %}
+                        <div class="alert alert-success mb-0">
+                            Курс уже куплен
+                        </div>
+                    {% elseif app.user %}
                         <form method="post" action="{{ path('app_course_pay', {'id': course.id}) }}">
                             <button class="btn btn-success">Купить курс</button>
                         </form>
@@ -58,7 +66,11 @@
                         <strong>Цена:</strong> {{ billingCourse.price }} ₽
                     </p>
 
-                    {% if app.user %}
+                    {% if hasCourseAccess %}
+                        <div class="alert alert-success mb-0">
+                            Курс уже арендован
+                        </div>
+                    {% elseif app.user %}
                         <form method="post" action="{{ path('app_course_pay', {'id': course.id}) }}">
                             <button class="btn btn-success">Арендовать курс</button>
                         </form>

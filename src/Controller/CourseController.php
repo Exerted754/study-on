@@ -51,9 +51,24 @@ final class CourseController extends AbstractController
     public function show(Course $course, BillingClient $billingClient): Response
     {
         $billingCourse = null;
+        $hasCourseAccess = false;
 
         try {
             $billingCourse = $billingClient->getCourse($course->getCode());
+
+            if ($this->getUser() instanceof User) {
+                /** @var User $user */
+                $user = $this->getUser();
+
+                $hasCourseAccess = $billingClient->hasCourseAccess(
+                    $course->getCode(),
+                    $user->getApiToken()
+                );
+            }
+
+            if (($billingCourse['type'] ?? null) === 'free') {
+                $hasCourseAccess = true;
+            }
         } catch (\Exception) {
             $this->addFlash('danger', 'Не удалось получить данные о стоимости курса');
         }
@@ -61,6 +76,7 @@ final class CourseController extends AbstractController
         return $this->render('course/show.html.twig', [
             'course' => $course,
             'billingCourse' => $billingCourse,
+            'hasCourseAccess' => $hasCourseAccess,
         ]);
     }
 

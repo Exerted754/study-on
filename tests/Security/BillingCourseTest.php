@@ -4,18 +4,19 @@ namespace App\Tests\Security;
 
 use App\Service\BillingClient;
 use App\Tests\Mock\BillingClientMock;
+use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 class BillingCourseTest extends WebTestCase
 {
-    private function loginUser(): \Symfony\Bundle\FrameworkBundle\KernelBrowser
+    private function loginUser(BillingClientMock $billingClientMock): KernelBrowser
     {
         $client = static::createClient();
         $client->disableReboot();
 
         static::getContainer()->set(
             BillingClient::class,
-            new BillingClientMock()
+            $billingClientMock
         );
 
         $crawler = $client->request('GET', '/login');
@@ -39,7 +40,7 @@ class BillingCourseTest extends WebTestCase
 
         static::getContainer()->set(
             BillingClient::class,
-            new BillingClientMock()
+            new BillingClientMock(['php-basic'])
         );
 
         $client->request('GET', '/courses/1');
@@ -47,11 +48,12 @@ class BillingCourseTest extends WebTestCase
         $this->assertResponseIsSuccessful();
         $this->assertSelectorTextContains('body', 'Стоимость курса');
         $this->assertSelectorTextContains('body', '199.99');
+        $this->assertSelectorTextContains('body', 'Войдите, чтобы купить курс');
     }
 
     public function testUserCanPayCourse(): void
     {
-        $client = $this->loginUser();
+        $client = $this->loginUser(new BillingClientMock(['php-basic']));
 
         $crawler = $client->request('GET', '/courses/1');
 
@@ -67,5 +69,16 @@ class BillingCourseTest extends WebTestCase
 
         $this->assertResponseIsSuccessful();
         $this->assertSelectorTextContains('body', 'Курс успешно оплачен');
+    }
+
+    public function testPaidCourseShowsAlreadyBoughtMessage(): void
+    {
+        $client = $this->loginUser(new BillingClientMock());
+
+        $client->request('GET', '/courses/1');
+
+        $this->assertResponseIsSuccessful();
+        $this->assertSelectorTextContains('body', 'Курс уже куплен');
+        $this->assertSelectorNotExists('form[action="/courses/1/pay"]');
     }
 }
