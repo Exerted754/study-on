@@ -5,6 +5,9 @@ namespace App\Controller;
 use App\Entity\Course;
 use App\Form\CourseType;
 use App\Repository\CourseRepository;
+use App\Exception\BillingUnavailableException;
+use App\Security\User;
+use App\Service\BillingClient;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -45,10 +48,19 @@ final class CourseController extends AbstractController
     }
 
     #[Route('/{id}', name: 'app_course_show', methods: ['GET'])]
-    public function show(Course $course): Response
+    public function show(Course $course, BillingClient $billingClient): Response
     {
+        $billingCourse = null;
+
+        try {
+            $billingCourse = $billingClient->getCourse($course->getCode());
+        } catch (\Exception) {
+            $this->addFlash('danger', 'Не удалось получить данные о стоимости курса');
+        }
+
         return $this->render('course/show.html.twig', [
             'course' => $course,
+            'billingCourse' => $billingCourse,
         ]);
     }
 
@@ -81,5 +93,31 @@ final class CourseController extends AbstractController
         }
 
         return $this->redirectToRoute('app_course_index', [], Response::HTTP_SEE_OTHER);
+    }
+
+    #[Route('/{id}/pay', name: 'app_course_pay', methods: ['POST'])]
+    #[IsGranted('ROLE_USER')]
+    public function pay(Course $course, BillingClient $billingClient): Response
+    {
+        /** @var User $user */
+        $user = $this->getUser();
+
+        try {
+            $response = $billingClient->payCourse($course->getCode(), $user->getApiToken());
+
+            if (($response['course_type'] ?? null) === 'rent') {
+                $this->addFlash('success', 'Курс успешно арендован');
+            } else {
+                $this->addFlash('success', 'Курс успешно оплачен');
+            }
+        } catch (BillingUnavailableException) {
+            $this->addFlash('danger', 'Сервис оплаты временно недоступен');
+        } catch (\Exception $exception) {
+            $this->addFlash('danger', $exception->getMessage());
+        }
+
+        return $this->redirectToRoute('app_course_show', [
+            'id' => $course->getId(),
+        ]);
     }
 }
