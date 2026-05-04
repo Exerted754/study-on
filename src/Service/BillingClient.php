@@ -100,6 +100,23 @@ class BillingClient
         );
     }
 
+    public function hasCourseAccess(string $courseCode, string $token): bool
+    {
+        $course = $this->getCourse($courseCode);
+
+        if (($course['type'] ?? null) === 'free') {
+            return true;
+        }
+
+        $transactions = $this->getTransactions($token, [
+            'type' => 'payment',
+            'course_code' => $courseCode,
+            'skip_expired' => true,
+        ]);
+
+        return count($transactions) > 0;
+    }
+
     private function request(
         string $method,
         string $uri,
