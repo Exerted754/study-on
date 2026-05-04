@@ -86,17 +86,17 @@ class BillingClientMock extends BillingClient
     {
         return [
             [
-                'code' => 'symfony-basics',
+                'code' => 'php-basic',
                 'type' => 'buy',
                 'price' => 199.99,
             ],
             [
-                'code' => 'php-basics',
+                'code' => 'symfony-start',
                 'type' => 'rent',
                 'price' => 99.99,
             ],
             [
-                'code' => 'html-css',
+                'code' => 'postgresql-base',
                 'type' => 'free',
             ],
         ];
