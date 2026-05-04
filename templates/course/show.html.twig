@@ -24,6 +24,54 @@
         <a href="{{ path('app_course_index') }}" class="btn btn-outline-secondary">К списку курсов</a>
     </div>
 
+    {% if billingCourse %}
+        <div class="card mb-4">
+            <div class="card-body">
+                <h2 class="h5 mb-3">Стоимость курса</h2>
+
+                {% if billingCourse.type == 'free' %}
+                    <p class="mb-0">
+                        <strong>Тип:</strong> Бесплатный курс
+                    </p>
+                {% elseif billingCourse.type == 'buy' %}
+                    <p>
+                        <strong>Тип:</strong> Покупка
+                    </p>
+                    <p>
+                        <strong>Цена:</strong> {{ billingCourse.price }} ₽
+                    </p>
+
+                    {% if app.user %}
+                        <form method="post" action="{{ path('app_course_pay', {'id': course.id}) }}">
+                            <button class="btn btn-success">Купить курс</button>
+                        </form>
+                    {% else %}
+                        <a href="{{ path('app_login') }}" class="btn btn-outline-primary">
+                            Войдите, чтобы купить курс
+                        </a>
+                    {% endif %}
+                {% elseif billingCourse.type == 'rent' %}
+                    <p>
+                        <strong>Тип:</strong> Аренда
+                    </p>
+                    <p>
+                        <strong>Цена:</strong> {{ billingCourse.price }} ₽
+                    </p>
+
+                    {% if app.user %}
+                        <form method="post" action="{{ path('app_course_pay', {'id': course.id}) }}">
+                            <button class="btn btn-success">Арендовать курс</button>
+                        </form>
+                    {% else %}
+                        <a href="{{ path('app_login') }}" class="btn btn-outline-primary">
+                            Войдите, чтобы арендовать курс
+                        </a>
+                    {% endif %}
+                {% endif %}
+            </div>
+        </div>
+    {% endif %}
+
     <div class="card mb-4">
         <div class="card-body">
             <h2 class="h4 mb-3">Уроки</h2>
