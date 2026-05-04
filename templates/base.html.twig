@@ -30,6 +30,10 @@
 
                 <div class="d-flex gap-2">
                     {% if app.user %}
+                        <a href="{{ path('app_transaction_index') }}" class="btn btn-outline-secondary">
+                            История операций
+                        </a>
+
                         <a href="{{ path('app_profile') }}" class="btn btn-outline-primary">
                             Профиль
                         </a>

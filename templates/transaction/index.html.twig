@@ -1,0 +1,58 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}История операций / StudyOn{% endblock %}
+
+{% block body %}
+    <h1 class="mb-4">История операций</h1>
+
+    {% if transactions|length > 0 %}
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Дата</th>
+                    <th>Тип</th>
+                    <th>Курс</th>
+                    <th>Сумма</th>
+                    <th>Действует до</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for transaction in transactions %}
+                    <tr>
+                        <td>{{ transaction.created_at|date('d.m.Y H:i') }}</td>
+
+                        <td>
+                            {% if transaction.type == 'deposit' %}
+                                Пополнение
+                            {% elseif transaction.type == 'payment' %}
+                                Оплата
+                            {% else %}
+                                {{ transaction.type }}
+                            {% endif %}
+                        </td>
+
+                        <td>
+                            {{ transaction.course_code ?? '—' }}
+                        </td>
+
+                        <td>
+                            {{ transaction.amount }} ₽
+                        </td>
+
+                        <td>
+                            {% if transaction.expires_at is defined %}
+                                {{ transaction.expires_at|date('d.m.Y H:i') }}
+                            {% else %}
+                                —
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <div class="alert alert-info">
+            Операций пока нет.
+        </div>
+    {% endif %}
+{% endblock %}
