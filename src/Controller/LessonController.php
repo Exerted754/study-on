@@ -4,6 +4,9 @@ namespace App\Controller;
 
 use App\Entity\Lesson;
 use App\Form\LessonType;
+use App\Exception\BillingUnavailableException;
+use App\Security\User;
+use App\Service\BillingClient;
 use App\Repository\CourseRepository;
 use App\Repository\LessonRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -64,8 +67,38 @@ final class LessonController extends AbstractController
 
     #[Route('/{id}', name: 'app_lesson_show', methods: ['GET'])]
     #[IsGranted('ROLE_USER')]
-    public function show(Lesson $lesson): Response
+    public function show(Lesson $lesson, BillingClient $billingClient): Response
     {
+        /** @var User $user */
+        $user = $this->getUser();
+
+        try {
+            $hasAccess = $billingClient->hasCourseAccess(
+                $lesson->getCourse()->getCode(),
+                $user->getApiToken()
+            );
+        } catch (BillingUnavailableException) {
+            $this->addFlash('danger', 'Сервис оплаты временно недоступен');
+
+            return $this->redirectToRoute('app_course_show', [
+                'id' => $lesson->getCourse()->getId(),
+            ]);
+        } catch (\Exception $exception) {
+            $this->addFlash('danger', $exception->getMessage());
+
+            return $this->redirectToRoute('app_course_show', [
+                'id' => $lesson->getCourse()->getId(),
+            ]);
+        }
+
+        if (!$hasAccess) {
+            $this->addFlash('danger', 'Для просмотра урока необходимо оплатить курс');
+
+            return $this->redirectToRoute('app_course_show', [
+                'id' => $lesson->getCourse()->getId(),
+            ]);
+        }
+
         return $this->render('lesson/show.html.twig', [
             'lesson' => $lesson,
         ]);
