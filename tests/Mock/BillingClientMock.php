@@ -81,4 +81,70 @@ class BillingClientMock extends BillingClient
             'refresh_token' => 'user_refresh_token',
         ];
     }
+
+    public function getCourses(): array
+    {
+        return [
+            [
+                'code' => 'symfony-basics',
+                'type' => 'buy',
+                'price' => 199.99,
+            ],
+            [
+                'code' => 'php-basics',
+                'type' => 'rent',
+                'price' => 99.99,
+            ],
+            [
+                'code' => 'html-css',
+                'type' => 'free',
+            ],
+        ];
+    }
+
+    public function getCourse(string $code): array
+    {
+        foreach ($this->getCourses() as $course) {
+            if ($course['code'] === $code) {
+                return $course;
+            }
+        }
+
+        throw new \Exception('Курс не найден.');
+    }
+
+    public function payCourse(string $code, string $token): array
+    {
+        $course = $this->getCourse($code);
+
+        $response = [
+            'success' => true,
+            'course_type' => $course['type'],
+        ];
+
+        if ($course['type'] === 'rent') {
+            $response['expires_at'] = (new \DateTimeImmutable('+1 week'))->format(DATE_ATOM);
+        }
+
+        return $response;
+    }
+
+    public function getTransactions(string $token, array $filters = []): array
+    {
+        return [
+            [
+                'id' => 1,
+                'created_at' => (new \DateTimeImmutable())->format(DATE_ATOM),
+                'type' => 'deposit',
+                'amount' => 1000,
+            ],
+            [
+                'id' => 2,
+                'created_at' => (new \DateTimeImmutable())->format(DATE_ATOM),
+                'type' => 'payment',
+                'amount' => 199.99,
+                'course_code' => 'symfony-basics',
+            ],
+        ];
+    }
 }
