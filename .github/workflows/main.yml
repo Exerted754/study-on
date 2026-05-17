@@ -50,7 +50,7 @@ jobs:
 
       - name: Install PHP dependencies
         run: |
-          docker compose exec -T -u root php composer install --no-interaction --prefer-dist
+          docker compose exec -T -u root php composer install --no-interaction --prefer-dist --no-scripts
 
       - name: Install frontend dependencies
         run: |
