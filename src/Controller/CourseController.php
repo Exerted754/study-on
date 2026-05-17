@@ -25,10 +25,29 @@ final class CourseController extends AbstractController
         BillingClient $billingClient
     ): Response {
         $billingCourses = [];
+        $paidCourses = [];
 
         try {
             foreach ($billingClient->getCourses() as $billingCourse) {
                 $billingCourses[$billingCourse['code']] = $billingCourse;
+            }
+
+            if ($this->getUser() instanceof User) {
+                /** @var User $user */
+                $user = $this->getUser();
+
+                $transactions = $billingClient->getTransactions($user->getApiToken(), [
+                    'type' => 'payment',
+                    'skip_expired' => true,
+                ]);
+
+                foreach ($transactions as $transaction) {
+                    if (!isset($transaction['course_code'])) {
+                        continue;
+                    }
+
+                    $paidCourses[$transaction['course_code']] = $transaction;
+                }
             }
         } catch (\Exception) {
             $this->addFlash('danger', 'Не удалось получить данные о стоимости курсов');
@@ -37,6 +56,7 @@ final class CourseController extends AbstractController
         return $this->render('course/index.html.twig', [
             'courses' => $courseRepository->findAll(),
             'billingCourses' => $billingCourses,
+            'paidCourses' => $paidCourses,
         ]);
     }
 
