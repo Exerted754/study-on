@@ -193,4 +193,29 @@ class BillingClientMock extends BillingClient
             'postgresql-base',
         ], true);
     }
+
+    public function createCourse(
+        string $code,
+        string $title,
+        string $type,
+        ?float $price,
+        string $token
+    ): array {
+        return [
+            'success' => true,
+        ];
+    }
+
+    public function updateCourse(
+        string $oldCode,
+        string $code,
+        string $title,
+        string $type,
+        ?float $price,
+        string $token
+    ): array {
+        return [
+            'success' => true,
+        ];
+    }
 }

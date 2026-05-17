@@ -117,6 +117,47 @@ class BillingClient
         return count($transactions) > 0;
     }
 
+    public function createCourse(
+        string $code,
+        string $title,
+        string $type,
+        ?float $price,
+        string $token
+    ): array {
+        return $this->request(
+            'POST',
+            '/api/v1/courses',
+            [
+                'code' => $code,
+                'title' => $title,
+                'type' => $type,
+                'price' => $price,
+            ],
+            $token
+        );
+    }
+
+    public function updateCourse(
+        string $oldCode,
+        string $code,
+        string $title,
+        string $type,
+        ?float $price,
+        string $token
+    ): array {
+        return $this->request(
+            'POST',
+            '/api/v1/courses/' . $oldCode,
+            [
+                'code' => $code,
+                'title' => $title,
+                'type' => $type,
+                'price' => $price,
+            ],
+            $token
+        );
+    }
+
     private function request(
         string $method,
         string $uri,
