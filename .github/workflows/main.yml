@@ -33,7 +33,7 @@ jobs:
           cat > .env.test.local <<EOF
           APP_ENV=test
           APP_SECRET=test
-          DATABASE_URL="postgresql://pguser:pguser@postgres:5432/study_on_test"
+          DATABASE_URL="postgresql://pguser:pguser@postgres:5432/study_on"
           BILLING_API_URL="http://billing.study-on.local"
           DEFAULT_URI="http://study-on.local"
           EOF
