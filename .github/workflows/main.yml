@@ -54,11 +54,11 @@ jobs:
 
       - name: Install frontend dependencies
         run: |
-          docker compose exec -T -u root node yarn install
+          docker compose exec -T -u root node sh -lc "corepack enable && corepack prepare yarn@1.22.22 --activate && yarn install"
 
       - name: Build frontend
         run: |
-          docker compose exec -T -u root node yarn encore dev
+          docker compose exec -T -u root node sh -lc "corepack enable && corepack prepare yarn@1.22.22 --activate && yarn encore dev"
 
       - name: Prepare test database
         run: |
