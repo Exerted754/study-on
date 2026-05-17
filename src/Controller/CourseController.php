@@ -9,6 +9,7 @@ use App\Exception\BillingUnavailableException;
 use App\Security\User;
 use App\Service\BillingClient;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\Form\FormError;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -41,23 +42,51 @@ final class CourseController extends AbstractController
 
     #[Route('/new', name: 'app_course_new', methods: ['GET', 'POST'])]
     #[IsGranted('ROLE_SUPER_ADMIN')]
-    public function new(Request $request, EntityManagerInterface $entityManager): Response
-    {
+    public function new(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        BillingClient $billingClient
+    ): Response {
         $course = new Course();
         $form = $this->createForm(CourseType::class, $course);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager->persist($course);
-            $entityManager->flush();
+            /** @var User $user */
+            $user = $this->getUser();
 
-            return $this->redirectToRoute('app_course_index', [], Response::HTTP_SEE_OTHER);
+            $billingType = $form->get('billingType')->getData();
+            $billingPrice = $form->get('billingPrice')->getData();
+
+            try {
+                $billingClient->createCourse(
+                    $course->getCode(),
+                    $course->getTitle(),
+                    $billingType,
+                    $billingPrice !== null ? (float) $billingPrice : null,
+                    $user->getApiToken()
+                );
+            } catch (BillingUnavailableException) {
+                $form->addError(new FormError('Сервис оплаты временно недоступен'));
+            } catch (\Exception $exception) {
+                $form->addError(new FormError($exception->getMessage()));
+            }
+
+            if (count($form->getErrors(true)) === 0) {
+                $entityManager->persist($course);
+                $entityManager->flush();
+
+                return $this->redirectToRoute('app_course_index', [], Response::HTTP_SEE_OTHER);
+            }
         }
 
         return $this->render('course/new.html.twig', [
             'course' => $course,
             'form' => $form,
-        ]);
+        ], new Response(
+            null,
+            $form->isSubmitted() ? Response::HTTP_UNPROCESSABLE_ENTITY : Response::HTTP_OK
+        ));
     }
 
     #[Route('/{id}', name: 'app_course_show', methods: ['GET'])]
@@ -100,21 +129,65 @@ final class CourseController extends AbstractController
 
     #[Route('/{id}/edit', name: 'app_course_edit', methods: ['GET', 'POST'])]
     #[IsGranted('ROLE_SUPER_ADMIN')]
-    public function edit(Request $request, Course $course, EntityManagerInterface $entityManager): Response
-    {
+    public function edit(
+        Request $request,
+        Course $course,
+        EntityManagerInterface $entityManager,
+        BillingClient $billingClient
+    ): Response {
+        $oldCode = $course->getCode();
+
         $form = $this->createForm(CourseType::class, $course);
+
+        if (!$request->isMethod('POST')) {
+            try {
+                $billingCourse = $billingClient->getCourse($course->getCode());
+
+                $form->get('billingType')->setData($billingCourse['type'] ?? 'free');
+                $form->get('billingPrice')->setData($billingCourse['price'] ?? null);
+            } catch (\Exception) {
+                $this->addFlash('danger', 'Не удалось получить данные о стоимости курса');
+            }
+        }
+
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager->flush();
+            /** @var User $user */
+            $user = $this->getUser();
 
-            return $this->redirectToRoute('app_course_index', [], Response::HTTP_SEE_OTHER);
+            $billingType = $form->get('billingType')->getData();
+            $billingPrice = $form->get('billingPrice')->getData();
+
+            try {
+                $billingClient->updateCourse(
+                    $oldCode,
+                    $course->getCode(),
+                    $course->getTitle(),
+                    $billingType,
+                    $billingPrice !== null ? (float) $billingPrice : null,
+                    $user->getApiToken()
+                );
+            } catch (BillingUnavailableException) {
+                $form->addError(new FormError('Сервис оплаты временно недоступен'));
+            } catch (\Exception $exception) {
+                $form->addError(new FormError($exception->getMessage()));
+            }
+
+            if (count($form->getErrors(true)) === 0) {
+                $entityManager->flush();
+
+                return $this->redirectToRoute('app_course_index', [], Response::HTTP_SEE_OTHER);
+            }
         }
 
         return $this->render('course/edit.html.twig', [
             'course' => $course,
             'form' => $form,
-        ]);
+        ], new Response(
+            null,
+            $form->isSubmitted() ? Response::HTTP_UNPROCESSABLE_ENTITY : Response::HTTP_OK
+        ));
     }
 
     #[Route('/{id}', name: 'app_course_delete', methods: ['POST'])]
