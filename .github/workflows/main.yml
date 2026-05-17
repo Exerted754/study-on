@@ -62,8 +62,8 @@ jobs:
 
       - name: Prepare test database
         run: |
-          docker compose exec -T -u root php bin/console doctrine:database:drop --env=test --if-exists --force || true
-          docker compose exec -T -u root php bin/console doctrine:database:create --env=test
+          docker compose exec -T -u root postgres psql -U pguser -c "DROP DATABASE IF EXISTS study_on_test;"
+          docker compose exec -T -u root postgres psql -U pguser -c "CREATE DATABASE study_on_test;"
           docker compose exec -T -u root php bin/console doctrine:migrations:migrate --env=test -n
           docker compose exec -T -u root php bin/console doctrine:fixtures:load --env=test -n
 
