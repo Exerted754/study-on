@@ -59,7 +59,7 @@ class BillingCourseTest extends WebTestCase
 
         $this->assertResponseIsSuccessful();
 
-        $form = $crawler->selectButton('Купить курс')->form();
+        $form = $crawler->filter('form[action="/courses/1/pay"]')->form();
 
         $client->submit($form);
 

@@ -61,9 +61,14 @@
                                 Недостаточно средств
                             </button>
                         {% else %}
-                            <form method="post" action="{{ path('app_course_pay', {'id': course.id}) }}">
-                                <button class="btn btn-success">Купить курс</button>
-                            </form>
+                            <button
+                                type="button"
+                                class="btn btn-success"
+                                data-bs-toggle="modal"
+                                data-bs-target="#payCourseModal"
+                            >
+                                Купить курс
+                            </button>
                         {% endif %}
                     {% else %}
                         <a href="{{ path('app_login') }}" class="btn btn-outline-primary">
@@ -88,9 +93,14 @@
                                 Недостаточно средств
                             </button>
                         {% else %}
-                            <form method="post" action="{{ path('app_course_pay', {'id': course.id}) }}">
-                                <button class="btn btn-success">Арендовать курс</button>
-                            </form>
+                            <button
+                                type="button"
+                                class="btn btn-success"
+                                data-bs-toggle="modal"
+                                data-bs-target="#payCourseModal"
+                            >
+                                Арендовать курс
+                            </button>
                         {% endif %}
                     {% else %}
                         <a href="{{ path('app_login') }}" class="btn btn-outline-primary">
@@ -126,5 +136,53 @@
 
     {% if is_granted('ROLE_SUPER_ADMIN') %}
         {{ include('course/_delete_form.html.twig') }}
+    {% endif %}
+
+    {% if billingCourse and app.user and not hasCourseAccess and billingCourse.type in ['buy', 'rent'] %}
+        <div class="modal fade" id="payCourseModal" tabindex="-1" aria-labelledby="payCourseModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <form method="post" action="{{ path('app_course_pay', {'id': course.id}) }}">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="payCourseModalLabel">
+                                Подтверждение оплаты
+                            </h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
+                        </div>
+
+                        <div class="modal-body">
+                            {% if billingCourse.type == 'buy' %}
+                                <p>
+                                    Вы действительно хотите купить курс
+                                    <strong>{{ course.title }}</strong>
+                                    за <strong>{{ billingCourse.price }} ₽</strong>?
+                                </p>
+                            {% elseif billingCourse.type == 'rent' %}
+                                <p>
+                                    Вы действительно хотите арендовать курс
+                                    <strong>{{ course.title }}</strong>
+                                    на неделю за <strong>{{ billingCourse.price }} ₽</strong>?
+                                </p>
+                            {% endif %}
+
+                            {% if balance is not null %}
+                                <p class="mb-0">
+                                    Ваш баланс: <strong>{{ balance }} ₽</strong>
+                                </p>
+                            {% endif %}
+                        </div>
+
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+                                Отмена
+                            </button>
+                            <button type="submit" class="btn btn-success">
+                                Подтвердить
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
     {% endif %}
 {% endblock %}
