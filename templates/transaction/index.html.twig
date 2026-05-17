@@ -86,7 +86,19 @@
                         </td>
 
                         <td>
-                            {{ transaction.course_code ?? '—' }}
+                            {% if transaction.course_code is defined %}
+                                {% set course = coursesByCode[transaction.course_code] ?? null %}
+
+                                {% if course %}
+                                    <a href="{{ path('app_course_show', {'id': course.id}) }}">
+                                        {{ course.title }}
+                                    </a>
+                                {% else %}
+                                    {{ transaction.course_code }}
+                                {% endif %}
+                            {% else %}
+                                —
+                            {% endif %}
                         </td>
 
                         <td>

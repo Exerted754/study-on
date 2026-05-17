@@ -72,8 +72,8 @@ class TransactionPageTest extends WebTestCase
         $client->request('GET', '/transactions?course_code=php-basic');
 
         $this->assertResponseIsSuccessful();
-        $this->assertSelectorTextContains('body', 'php-basic');
-        $this->assertSelectorTextNotContains('body', 'symfony-start');
+        $this->assertSelectorTextContains('tbody', 'Основы PHP');
+        $this->assertSelectorTextNotContains('tbody', 'Старт с Symfony');
     }
 
     public function testUserCanFilterExpiredRentTransactions(): void

@@ -56,9 +56,15 @@
                             Курс уже куплен
                         </div>
                     {% elseif app.user %}
-                        <form method="post" action="{{ path('app_course_pay', {'id': course.id}) }}">
-                            <button class="btn btn-success">Купить курс</button>
-                        </form>
+                        {% if balance is not null and balance < billingCourse.price %}
+                            <button class="btn btn-success" disabled>
+                                Недостаточно средств
+                            </button>
+                        {% else %}
+                            <form method="post" action="{{ path('app_course_pay', {'id': course.id}) }}">
+                                <button class="btn btn-success">Купить курс</button>
+                            </form>
+                        {% endif %}
                     {% else %}
                         <a href="{{ path('app_login') }}" class="btn btn-outline-primary">
                             Войдите, чтобы купить курс
@@ -77,9 +83,15 @@
                             Курс уже арендован
                         </div>
                     {% elseif app.user %}
-                        <form method="post" action="{{ path('app_course_pay', {'id': course.id}) }}">
-                            <button class="btn btn-success">Арендовать курс</button>
-                        </form>
+                        {% if balance is not null and balance < billingCourse.price %}
+                            <button class="btn btn-success" disabled>
+                                Недостаточно средств
+                            </button>
+                        {% else %}
+                            <form method="post" action="{{ path('app_course_pay', {'id': course.id}) }}">
+                                <button class="btn btn-success">Арендовать курс</button>
+                            </form>
+                        {% endif %}
                     {% else %}
                         <a href="{{ path('app_login') }}" class="btn btn-outline-primary">
                             Войдите, чтобы арендовать курс
